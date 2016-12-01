@@ -1,0 +1,54 @@
+import os
+import pandas as pd
+import matplotlib.pyplot as plt
+
+os.chdir("E:\My Study\python\kaggle")
+img = pd.read_csv('train.csv')
+img = img.values[0:20,1:]
+
+fig = plt.figure() 
+
+for i in range(0,9,1):
+    print("\ncurrent num is: %d" % i)
+    px = img[i,:]
+    pix = []
+    for j in range(28):
+        pix.append([])
+        for k in range(28):
+            pix[j].append(px[j*28+k])
+    ax = fig.add_subplot(330+i+1)
+    ax.imshow(pix)
+#plt.show()
+
+import numpy as np
+import time
+import os
+from sklearn.cross_validation import cross_val_score
+
+
+os.chdir("E:\My Study\python\kaggle")
+dataset = pd.read_csv("train.csv")
+X_train = dataset.values[0:, 1:]
+y_train = dataset.values[0:, 0]
+
+X_test = pd.read_csv("test.csv").values
+
+from sklearn.neighbors import KNeighborsClassifier
+
+knn_clf=KNeighborsClassifier(n_neighbors=5, algorithm='kd_tree', weights='distance', p=3)
+
+print("Training start")
+
+start = time.clock()
+knn_clf.fit(X_train,y_train)
+elapsed = (time.clock() - start)
+print("Training Time used:",int(elapsed/60) , "min")
+
+result=knn_clf.predict(X_test)
+result = np.c_[range(1,len(result)+1), result.astype(int)]
+df_result = pd.DataFrame(result, columns=['ImageId', 'Label'])
+
+df_result.to_csv('results.csv', index=False)
+#end time
+elapsed = (time.clock() - start)
+print("Test Time used:",int(elapsed/60) , "min")
